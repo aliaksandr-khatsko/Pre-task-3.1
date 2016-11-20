@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using System.IO;
 using System.Xml;
+using System.Security;
 
 namespace Home_Appliances
 {
@@ -124,17 +125,82 @@ namespace Home_Appliances
                 switch (userChoiceFirstMenu)
                 {
                     case "LIST":
-                        for (int i = 1; i < appliences.Count + 1; i++)
+                        try
                         {
-                            Console.WriteLine("ID: {0}", i);
-                            appliences[i - 1].PrintSummary();
+                            if (appliences.Count > 0)
+                            {
+                            for (int i = 1; i < appliences.Count + 1; i++)
+                            {
+                                Console.WriteLine("ID: {0}", i);
+                                appliences[i - 1].PrintSummary();
+                            }
+
+                            }
+                            else
+                            {
+                                throw (new CatalogIsEpmtyException("Appliances Catalog is empty. Please, upload appliances first."));
+                            }
+                        }
+                        catch (CatalogIsEpmtyException ex)
+                        {
+                            Console.WriteLine(ex.Message.ToString());
+                            Console.WriteLine();
                         }
                         break;
                     case "XML":
-                        appliences = serializer.Deserialize();
+                        try
+                        {
+                            appliences = serializer.Deserialize();
+                        }
+                        catch (DirectoryNotFoundException directoryNotFound)
+                        {
+                            Console.WriteLine(directoryNotFound.Message);
+                        }
+                        catch (FileNotFoundException fileNotFound)
+                        {
+                            Console.WriteLine(fileNotFound.Message);
+                        }
+                        catch (PathTooLongException longPath)
+                        {
+                            Console.WriteLine(longPath.Message);
+                        }
+
+                        catch (SecurityException securityException)
+                        {
+                            Console.WriteLine(securityException.Message);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                         break;
                     case "DATA":
-                        appliences = binSerializer.Deserialize();
+                        try
+                        {
+                            appliences = binSerializer.Deserialize();
+                        }
+                        catch (DirectoryNotFoundException directoryNotFound)
+                        {
+                            Console.WriteLine(directoryNotFound.Message);
+                        }
+                        catch (FileNotFoundException fileNotFound)
+                        {
+                            Console.WriteLine(fileNotFound.Message);
+                        }
+                        catch (PathTooLongException longPath)
+                        {
+                            Console.WriteLine(longPath.Message);
+                        }
+
+                        catch (SecurityException securityException)
+                        {
+                            Console.WriteLine(securityException.Message);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                        
                         break;
                     case "SAVEXML":
                         serializer.Serialize(appliences);
@@ -143,10 +209,26 @@ namespace Home_Appliances
                         binSerializer.Serialize(appliences);
                         break;
                     case "D":
-                        for (int i = 1; i < appliences.Count + 1; i++)
+                        try
                         {
-                            Console.WriteLine("ID: {0}", i);
-                            appliences[i - 1].PrintSummary();
+                            if (appliences.Count > 0)
+                            {
+                                for (int i = 1; i < appliences.Count + 1; i++)
+                                {
+                                    Console.WriteLine("ID: {0}", i);
+                                    appliences[i - 1].PrintSummary();
+                                }
+
+                            }
+                            else
+                            {
+                                throw (new CatalogIsEpmtyException("Appliances Catalog is empty. Please, upload appliances first."));
+                            }
+                        }
+                        catch (CatalogIsEpmtyException ex)
+                        {
+                            Console.WriteLine(ex.Message.ToString());
+                            break;
                         }
                         string quitDeletechoice = null;
                         bool quitFromDeleteLoop = false;
@@ -158,82 +240,160 @@ namespace Home_Appliances
                             bool tryParseResult = int.TryParse(userChoiceDelete, out applianceID);
                             if (tryParseResult)
                             {
-                                if (applianceID != 0 && applianceID <= appliences.Count())
+                                try
                                 {
-                                    appliences.RemoveAt(applianceID - 1);
+                                    if (applianceID != 0 && applianceID <= appliences.Count())
+                                    {
+                                        appliences.RemoveAt(applianceID - 1);
                                     for (int i = 1; i < appliences.Count + 1; i++)
                                     {
                                         Console.WriteLine("ID: {0}", i);
                                         appliences[i - 1].PrintSummary();
                                         quitFromDeleteLoop = true;
                                     }
+                                    }
+                                    else
+                                    {
+                                        throw (new ApplianceDoNotExistException("Appliance with the following ID does not exist. You may back to the main menu by entering Q"));
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                Console.WriteLine("You entered wrong ID. You may back to the main menu by entering Q");
-                                quitDeletechoice = Console.ReadLine();
-                                quitFromDeleteLoop = quitDeletechoice.Equals("Q");
-
+                                catch (ApplianceDoNotExistException ex)
+                                {
+                                    Console.WriteLine(ex.Message.ToString());
+                                    userChoiceDelete = Console.ReadLine();
+                                    quitFromDeleteLoop = userChoiceDelete.Equals("Q");
+                                }
                             }
                         } while (quitFromDeleteLoop == false);
                         break;
                     case "ON":
+                        try
+                        {
+                            if (appliences.Count > 0)
+                            {
+                                for (int i = 1; i < appliences.Count + 1; i++)
+                                {
+                                    Console.WriteLine("ID: {0}", i);
+                                    appliences[i - 1].PrintSummary();
+                                }
+
+                            }
+                            else
+                            {
+                                throw (new CatalogIsEpmtyException("Appliances Catalog is empty. Please, upload appliances first."));
+                            }
+                        }
+                        catch (CatalogIsEpmtyException ex)
+                        {
+                            Console.WriteLine(ex.Message.ToString());
+                            break;
+                        }
                         string quitSwitchChoiceOn = null;
                         bool quitFromOnLoop = false;
                         do
                         {
                             Console.WriteLine("To switch ON a specific appliance enter appliance ID and press Enter");
-                            string userChoiceDelete = Console.ReadLine();
+                            string userChoiceOn = Console.ReadLine();
                             int applianceID;
-                            bool tryParseResult = int.TryParse(userChoiceDelete, out applianceID);
+                            bool tryParseResult = int.TryParse(userChoiceOn, out applianceID);
                             if (tryParseResult)
                             {
-                                if (applianceID != 0 && applianceID <= appliences.Count())
+                                try
                                 {
-                                    appliences.ElementAt(applianceID - 1).SwitchOn();
-                                    quitFromOnLoop = true;
+                                    if (applianceID != 0 && applianceID <= appliences.Count())
+                                    {
+                                        appliences.ElementAt(applianceID - 1).SwitchOn();
+                                        quitFromOnLoop = true;
+                                    }
+                                    else
+                                    {
+                                        throw (new ApplianceDoNotExistException("Appliance with the following ID does not exist. You may back to the main menu by entering Q"));
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                Console.WriteLine("You entered wrong ID. You may back to the main menu by entering Q");
-                                quitSwitchChoiceOn = Console.ReadLine();
-                                quitFromOnLoop = quitSwitchChoiceOn.Equals("Q");
+                                catch (ApplianceDoNotExistException ex)
+                                {
+                                    Console.WriteLine(ex.Message.ToString());
+                                    quitSwitchChoiceOn = Console.ReadLine();
+                                    quitFromOnLoop = quitSwitchChoiceOn.Equals("Q");
+                                }
                             }
                         } while (quitFromOnLoop == false);
                         break;
                     case "OFF":
+                        try
+                        {
+                            if (appliences.Count > 0)
+                            {
+                                for (int i = 1; i < appliences.Count + 1; i++)
+                                {
+                                    Console.WriteLine("ID: {0}", i);
+                                    appliences[i - 1].PrintSummary();
+                                }
+
+                            }
+                            else
+                            {
+                                throw (new CatalogIsEpmtyException("Appliances Catalog is empty. Please, upload appliances first."));
+                            }
+                        }
+                        catch (CatalogIsEpmtyException ex)
+                        {
+                            Console.WriteLine(ex.Message.ToString());
+                            break;
+                        }
                         string switchChoiceOff = null;
                         bool quitFromOffLoop = false;
                         do
                         {
                             Console.WriteLine("To switch OFF a specific appliance enter appliance ID and press Enter");
-                            string userChoiceDelete = Console.ReadLine();
+                            string userChoiceOff = Console.ReadLine();
                             int applianceID;
-                            bool tryParseResult = int.TryParse(userChoiceDelete, out applianceID);
+                            bool tryParseResult = int.TryParse(userChoiceOff, out applianceID);
                             if (tryParseResult)
                             {
-                                if (applianceID != 0 && applianceID <= appliences.Count())
+                                try
                                 {
-                                    appliences.ElementAt(applianceID - 1).SwitchOff();
-                                    quitFromOffLoop = true;
+                                    if (applianceID != 0 && applianceID <= appliences.Count())
+                                    {
+                                        appliences.ElementAt(applianceID - 1).SwitchOff();
+                                        quitFromOffLoop = true;
+                                    }
+                                    else
+                                    {
+                                        throw (new ApplianceDoNotExistException("Appliance with the following ID does not exist. You may back to the main menu by entering Q"));
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                Console.WriteLine("You entered wrong ID. You may back to the main menu by entering Q");
-                                switchChoiceOff = Console.ReadLine();
-                                quitFromOffLoop = switchChoiceOff.Equals("Q");
+                                catch (ApplianceDoNotExistException ex)
+                                {
+                                    Console.WriteLine(ex.Message.ToString());
+                                    switchChoiceOff = Console.ReadLine();
+                                    quitFromOffLoop = switchChoiceOff.Equals("Q");
+                                }
                             }
                         } while (quitFromOffLoop == false);
                         break;
                     case "SORT":
                         appliences.OrderBy(ap => ap.PowerW);
-                        for (int i = 1; i < appliences.Count + 1; i++)
+                        try
                         {
-                            Console.WriteLine("ID: {0}", i);
-                            appliences[i - 1].PrintSummary();
+                            if (appliences.Count > 0)
+                            {
+                                for (int i = 1; i < appliences.Count + 1; i++)
+                                {
+                                    Console.WriteLine("ID: {0}", i);
+                                    appliences[i - 1].PrintSummary();
+                                }
+
+                            }
+                            else
+                            {
+                                throw (new CatalogIsEpmtyException("Appliances Catalog is empty. Please, upload appliances first."));
+                            }
+                        }
+                        catch (CatalogIsEpmtyException ex)
+                        {
+                            Console.WriteLine(ex.Message.ToString());
+                            break;
                         }
                         break;
                     case "RANGE":
@@ -251,8 +411,24 @@ namespace Home_Appliances
 
                             if (double.TryParse(userChoiceLowValue, out userChoiceLowPowerValue))
                             {
-                                Console.WriteLine("Low Power Value is {0}", userChoiceLowPowerValue);
-                                quitFirstRangeLoop = true;
+                                try
+                                {
+                                    if (userChoiceLowPowerValue > 0)
+                                    {
+                                        Console.WriteLine("Low Power Value is {0}", userChoiceLowPowerValue);
+                                        quitFirstRangeLoop = true;
+
+                                    }
+                                    else
+                                    {
+                                        throw (new OutOfRangeException("Entered value should be more than 0"));
+                                    }
+                                }
+                                catch (OutOfRangeException ex)
+                                {
+                                    Console.WriteLine(ex.Message.ToString());
+                                }
+                                
                             }
                             else
                             {
@@ -274,11 +450,23 @@ namespace Home_Appliances
                                 bool tryParseResultSecond = double.TryParse(userChoiceHighValue, out userChoiceHighPowerValue);
 
                                 if (tryParseResultSecond)
-                                {
-                                    Console.WriteLine("High Power Value is {0}", userChoiceHighPowerValue);
-                                    quitSecondRangeLoop = true;
+                                    try
+                                    {
+                                        if (userChoiceHighPowerValue > userChoiceLowPowerValue)
+                                        {
+                                            Console.WriteLine("High Power Value is {0}", userChoiceHighPowerValue);
+                                            quitSecondRangeLoop = true;
 
-                                }
+                                        }
+                                        else
+                                        {
+                                            throw (new OutOfRangeException("Entered value should be more than than low power value"));
+                                        }
+                                    }
+                                    catch (OutOfRangeException ex)
+                                    {
+                                        Console.WriteLine(ex.Message.ToString());
+                                    }
                                 else
                                 {
                                     Console.WriteLine("You entered wrong number. You may back to the main menu by entering Q");
@@ -304,7 +492,36 @@ namespace Home_Appliances
         }
 
     }
-    
+
+    //Exception for handling users choice of an appliance
+    public class ApplianceDoNotExistException : Exception
+    {
+        public ApplianceDoNotExistException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    //Exception for handling availability of appliances in catalog
+    public class CatalogIsEpmtyException : Exception
+    {
+        public CatalogIsEpmtyException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    //Exeption for handling entered by user range of appliances power.
+    public class OutOfRangeException : Exception
+    {
+        public OutOfRangeException(string message)
+            : base(message)
+        {
+        }
+    }
+
+
+
     public class BinarySerializer
     {
         public void Serialize(List<ElectricalAppliances> applianceses)
@@ -331,6 +548,7 @@ namespace Home_Appliances
             DataContractSerializer dsr = new DataContractSerializer(typeof(List<ElectricalAppliances>), knownTypes);
             var serializer = new DataContractSerializer(typeof(List<ElectricalAppliances>), knownTypes);
             List<ElectricalAppliances> electricalApp;
+
             using (FileStream fs = new FileStream("DataFile.dat", FileMode.Open))
             {
                 using (var reader = XmlDictionaryReader.CreateBinaryReader(fs, XmlDictionaryReaderQuotas.Max))
@@ -340,6 +558,7 @@ namespace Home_Appliances
 
                 return electricalApp;
             }
+
             Console.WriteLine("Appliances Uploaded");
             Console.ReadLine();
 
